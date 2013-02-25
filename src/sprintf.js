@@ -65,8 +65,8 @@
         var paramIndex = 1;
         while ( part = r.exec( format ) ) {
             // Check if an input value has been provided, for the current
-            // format string
-            if ( paramIndex >= arguments.length ) {
+            // format string (no argument needed for %%)
+            if ( ( paramIndex >= arguments.length ) && ( part[8] != '%' ) ) {
                 throw "sprintf: At least one argument was missing.";
             }
 
@@ -78,7 +78,7 @@
                 /* force sign */
                 sign: ( part[1] == '+' ),
                 /* is the given data negative */
-                negative: ( parseInt( arguments[paramIndex] ) < 0 ) ? true : false,
+                negative: ( parseFloat( arguments[paramIndex] ) < 0 ) ? true : false,
                 /* padding character (default: <space>) */
                 padding: ( part[2] == undefined )
                          ? ( ' ' ) /* default */

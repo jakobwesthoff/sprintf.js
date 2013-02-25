@@ -78,7 +78,7 @@
                 /* force sign */
                 sign: ( part[1] == '+' ),
                 /* is the given data negative */
-                negative: ( parseInt( arguments[paramIndex] ) < 0 ) ? true : false,
+                negative: ( parseFloat( arguments[paramIndex] ) < 0 ) ? true : false,
                 /* padding character (default: <space>) */
                 padding: ( part[2] == undefined )
                          ? ( ' ' ) /* default */

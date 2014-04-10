@@ -21,9 +21,8 @@
  */
 
 //////// --- modified for module embedding in node.js projects --- ///////////////
-////// --- method to the string object does not work in node.js --- //////////////
 
-module.exports = function( format ) {
+var sprintf = module.exports = function( format ) {
         // Check for format definition
         if ( typeof format != 'string' ) {
             throw "sprintf: The first arguments need to be a valid format string.";
@@ -201,13 +200,9 @@ module.exports = function( format ) {
         return newString;
     };
 
-/* ///////////////////// --- not working in node.js --- /////////////////////////////
-    // Register the new sprintf function as a global function, as well as a
-    // method to the String object.
-    window.sprintf = sprintf;
-    String.prototype.printf = function() {
+//////////////// --- Register the method to the String object. --- //////////////
+String.prototype.printf = function() {
         var newArguments = Array.prototype.slice.call( arguments );
         newArguments.unshift( String( this ) );
         return sprintf.apply( undefined, newArguments );
 }
-   ////////////////////             ---                  ///////////////////////////*/

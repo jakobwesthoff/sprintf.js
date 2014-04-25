@@ -128,7 +128,7 @@
                     preSubstitution = String( Math.abs( parseInt( parts[i].data ) ) );
                 break;
                 case 'f':
-                    preSubstitution = ( parts[i].precision == false )
+                    preSubstitution = ( parts[i].precision === false )
                                       ? ( String( ( Math.abs( parseFloat( parts[i].data ) ) ) ) )
                                       : ( Math.abs( parseFloat( parts[i].data ) ).toFixed( parts[i].precision ) );
                 break;

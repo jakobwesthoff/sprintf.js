@@ -19,13 +19,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-(function( window ) {
+(function(root, factory) {
+    // CommonJS module
+    if (typeof module != 'undefined') {
+        module.exports = factory();
+    }
+    // AMD
+    else if (typeof define == 'function' && typeof define.amd == 'object') {
+        define(factory);
+    }
+    // Global
+    else {
+        this.sprintf = definition();
+    }
+}(this, function() {
     var sprintf = function( format ) {
         // Check for format definition
         if ( typeof format != 'string' ) {
             throw "sprintf: The first arguments need to be a valid format string.";
         }
-        
+
         /**
          * Define the regex to match a formating string
          * The regex consists of the following parts:
@@ -53,7 +66,7 @@
          * 0: Full format string
          * 1: sign specifier (+)
          * 2: padding specifier (0/<space>/'<any char>)
-         * 3: if the padding character starts with a ' this will be the real 
+         * 3: if the padding character starts with a ' this will be the real
          *    padding character
          * 4: alignment specifier
          * 5: width specifier
@@ -81,11 +94,11 @@
                 negative: ( parseFloat( arguments[paramIndex] ) < 0 ) ? true : false,
                 /* padding character (default: <space>) */
                 padding: ( part[2] == undefined )
-                         ? ( ' ' ) /* default */
-                         : ( ( part[2].substring( 0, 1 ) == "'" ) 
-                             ? ( part[3] ) /* use special char */
-                             : ( part[2] ) /* use normal <space> or zero */
-                           ),
+                    ? ( ' ' ) /* default */
+                    : ( ( part[2].substring( 0, 1 ) == "'" )
+                    ? ( part[3] ) /* use special char */
+                    : ( part[2] ) /* use normal <space> or zero */
+                ),
                 /* should the output be aligned left?*/
                 alignLeft: ( part[4] == '-' ),
                 /* width specifier (number or false) */
@@ -105,7 +118,7 @@
         for( var i=0; i<parts.length; ++i ) {
             // Add first unformated string part
             newString += format.substring( start, parts[i].begin );
-            
+
             // Mark the new string start
             start = parts[i].end;
 
@@ -117,33 +130,33 @@
             switch ( parts[i].type ) {
                 case '%':
                     preSubstitution = "%";
-                break;
+                    break;
                 case 'b':
                     preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 2 );
-                break;
+                    break;
                 case 'c':
                     preSubstitution = String.fromCharCode( Math.abs( parseInt( parts[i].data ) ) );
-                break;
+                    break;
                 case 'd':
                     preSubstitution = String( Math.abs( parseInt( parts[i].data ) ) );
-                break;
+                    break;
                 case 'f':
                     preSubstitution = ( parts[i].precision === false )
-                                      ? ( String( ( Math.abs( parseFloat( parts[i].data ) ) ) ) )
-                                      : ( Math.abs( parseFloat( parts[i].data ) ).toFixed( parts[i].precision ) );
-                break;
+                        ? ( String( ( Math.abs( parseFloat( parts[i].data ) ) ) ) )
+                        : ( Math.abs( parseFloat( parts[i].data ) ).toFixed( parts[i].precision ) );
+                    break;
                 case 'o':
                     preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 8 );
-                break;
+                    break;
                 case 's':
                     preSubstitution = parts[i].data.substring( 0, parts[i].precision ? parts[i].precision : parts[i].data.length ); /* Cut if precision is defined */
-                break;
+                    break;
                 case 'x':
                     preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toLowerCase();
-                break;
+                    break;
                 case 'X':
                     preSubstitution = Math.abs( parseInt( parts[i].data ) ).toString( 16 ).toUpperCase();
-                break;
+                    break;
                 default:
                     throw 'sprintf: Unknown type "' + parts[i].type + '" detected. This should never happen. Maybe the regex is wrong.';
             }
@@ -160,26 +173,26 @@
             // Pad the string based on the given width
             if ( parts[i].width != false ) {
                 // Padding needed?
-                if ( parts[i].width > preSubstitution.length ) 
+                if ( parts[i].width > preSubstitution.length )
                 {
                     var origLength = preSubstitution.length;
-                    for( var j = 0; j < parts[i].width - origLength; ++j ) 
+                    for( var j = 0; j < parts[i].width - origLength; ++j )
                     {
-                        preSubstitution = ( parts[i].alignLeft == true ) 
-                                          ? ( preSubstitution + parts[i].padding )
-                                          : ( parts[i].padding + preSubstitution );
+                        preSubstitution = ( parts[i].alignLeft == true )
+                            ? ( preSubstitution + parts[i].padding )
+                            : ( parts[i].padding + preSubstitution );
                     }
                 }
             }
 
             // Add a sign symbol if neccessary or enforced, but only if we are
             // not handling a string
-            if ( parts[i].type == 'b' 
-              || parts[i].type == 'd' 
-              || parts[i].type == 'o' 
-              || parts[i].type == 'f' 
-              || parts[i].type == 'x' 
-              || parts[i].type == 'X' ) {
+            if ( parts[i].type == 'b'
+                || parts[i].type == 'd'
+                || parts[i].type == 'o'
+                || parts[i].type == 'f'
+                || parts[i].type == 'x'
+                || parts[i].type == 'X' ) {
                 if ( parts[i].negative == true ) {
                     preSubstitution = "-" + preSubstitution;
                 }
@@ -198,12 +211,15 @@
         return newString;
     };
 
-    // Register the new sprintf function as a global function, as well as a
-    // method to the String object.
-    window.sprintf = sprintf;
-    String.prototype.printf = function() {
-        var newArguments = Array.prototype.slice.call( arguments );
-        newArguments.unshift( String( this ) );
-        return sprintf.apply( undefined, newArguments );
-    }
-})( window );
+    // Allow the sprintf function to be attached to any string or the string prototype
+    sprintf.attach = function(target) {
+        target.printf = function() {
+            var newArguments = Array.prototype.slice.call( arguments );
+            newArguments.unshift( String( this ) );
+            return sprintf.apply( undefined, newArguments );
+        };
+    };
+
+    // Export the sprintf function to the outside world
+    return sprintf;
+}));

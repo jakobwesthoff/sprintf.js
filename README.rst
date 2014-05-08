@@ -46,23 +46,29 @@ is equivalent to the one used by the sprintf c function.
 Usage
 =====
 
-After the corresponding Javascript file has been loaded, the global function
-``sprintf`` is registered, ready to be called. Furthermore the String object is
-extended with a ``printf`` method. Both of these are different means to execute
-the same functionality.
+The functionallity is exposed as a CommonJS module (nodejs), an AMD Module (requirejs) or as a global function, based on the environment it is used in.
 
-You may either use the global function ``sprintf`` which returns the newly
-formatted string if supplied with the format string, as well as all needed
-arguments::
+It may either be used as a standalone function, or attached to the string prototype:
 
-    var formatted = sprintf("The number is %.2f", number);
+    // Global function
+    var formatted = sprintf("The number is %.2f", 42);
 
-Or you may use the ``printf`` method directly on the format string::
+    // CommonJS
+    var sprintf = require("./path/to/sprintf");
+    var formatted = sprintf("The number is %.2f", 42);
 
-    var formatted = "The number is %.2f".printf(number);
+    // AMD
+    define("your-module", ["./path/to/sprintf"], function(sprintf) {
+        var formatted = sprintf("The number is %.2f", 42);
+    });
 
-Internally the exactly the same processing takes place. Therefore you may
-decide freely which syntax you like better.
+The addition to the `String.prototype` is not done automatically to not interfere with a language primitive. You may however add a `printf` function to every string by calling `.attach`:
+
+    // Load sprintf as shown above
+    sprintf.attach(String.prototype);
+
+    // Now every string has a printf function available
+    var formatted = "%s %s".printf("foo", "bar");
 
 
 License

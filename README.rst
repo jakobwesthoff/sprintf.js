@@ -48,7 +48,7 @@ Usage
 
 The functionallity is exposed as a CommonJS module (nodejs), an AMD Module (requirejs) or as a global function, based on the environment it is used in.
 
-It may either be used as a standalone function, or attached to the string prototype:
+It may either be used as a standalone function, or attached to the string prototype::
 
     // Global function
     var formatted = sprintf("The number is %.2f", 42);
@@ -62,7 +62,8 @@ It may either be used as a standalone function, or attached to the string protot
         var formatted = sprintf("The number is %.2f", 42);
     });
 
-The addition to the `String.prototype` is not done automatically to not interfere with a language primitive. You may however add a `printf` function to every string by calling `.attach`:
+
+The addition to the ``String.prototype`` is not done automatically to not interfere with a language primitive. You may however add a ``printf`` function to every string by calling ``.attach``::
 
     // Load sprintf as shown above
     sprintf.attach(String.prototype);

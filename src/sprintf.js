@@ -30,7 +30,7 @@
     }
     // Global
     else {
-        this.sprintf = definition();
+        this.sprintf = factory();
     }
 }(this, function() {
     var sprintf = function( format ) {
